@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "@babel/generator": "^7.26.2",
+    "@babel/parser": "^7.26.2",
+    "crypto": "^1.0.1",
+    "glob": "^11.0.0",
+    "leven": "^4.0.0",
+    "string-similarity": "^4.0.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "@types/babel__generator": "^7.6.8",
+    "@types/node": "^22.9.1"
+  }
+}
