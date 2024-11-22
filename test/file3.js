@@ -1,8 +1,8 @@
 // file3.js
 
 // Same as add in file1.js
-function add(c, d) {
-  return c + d;
+function add(a, b) {
+  return a + b;
 }
 
 // Slightly different greet logic

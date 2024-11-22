@@ -2,11 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { normalizeFunctions } from "./normalize";
 
-/**
- * Recursively scans a directory and returns all JavaScript/TypeScript file paths.
- * @param dir - The directory to scan.
- * @returns An array of file paths.
- */
+// Recursively scans a directory and returns all JavaScript/TypeScript file paths.
 function scanFiles(dir: string): string[] {
   const files: string[] = [];
   const items = fs.readdirSync(dir);
@@ -25,10 +21,8 @@ function scanFiles(dir: string): string[] {
   return files;
 }
 
-/**
- * Normalizes all functions in the given file and logs the results.
- * @param file - The file to process.
- */
+// Normalizes all functions in the given file and logs the results.
+
 function testNormalizeFile(file: string) {
   try {
     const code = fs.readFileSync(file, "utf-8");

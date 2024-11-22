@@ -1,11 +1,7 @@
 import { parse } from "@babel/parser";
 import generate from "@babel/generator";
 
-/**
- * Normalizes an AST node by replacing variable names, function names, and literals with placeholders.
- * @param node - The AST node to normalize.
- * @returns The normalized AST node as a string.
- */
+// Normalizes an AST node by replacing variable names, function names, and literals with placeholders.
 export function normalizeAST(node: any): string {
   function traverse(n: any) {
     if (!n || typeof n !== "object") return;
@@ -62,11 +58,7 @@ export function normalizeAST(node: any): string {
   }
 }
 
-/**
- * Normalizes all functions in a JavaScript/TypeScript file.
- * @param code - The file content to normalize.
- * @returns An array of normalized functions.
- */
+// Normalizes all functions in a JavaScript/TypeScript file
 export function normalizeFunctions(code: string): string[] {
   try {
     const ast = parse(code, {
