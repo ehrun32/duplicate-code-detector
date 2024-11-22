@@ -7,20 +7,22 @@ import { scanDirectory, validateDirectory } from "./utils/scanUtils";
  * Combines duplicate detection results and outputs a JSON summary.
  */
 function main() {
-  const directory = "./test"; // Change to your test directory
+  const directory = "./test/TestingFilesEndingWithTSX"; // Change to your test directory
 
   if (!validateDirectory(directory)) {
     console.error(`Invalid directory: ${directory}`);
     process.exit(1);
   }
 
-  const files = scanDirectory(directory);
+  // Scan for JavaScript, TypeScript, JSX, and TSX files
+  const files = scanDirectory(directory, [".js", ".ts", ".jsx", ".tsx"]);
   console.log("Files to process:", files);
 
   // Run all duplicate detectors
   const exactDuplicates = findExactDuplicates(files);
   const nearDuplicates = findNearDuplicates(files);
   const structuralDuplicates = findStructuralDuplicates(files);
+
   // Filter out near-duplicates with similarity of 1
   const filteredNearDuplicates = nearDuplicates.filter(
     (dup) => dup.similarity < 1

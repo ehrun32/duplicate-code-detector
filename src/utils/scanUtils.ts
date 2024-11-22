@@ -4,7 +4,7 @@ import * as path from "path";
 // Recursively scans a directory to find all files with the specified extensions.
 export function scanDirectory(
   dir: string,
-  extensions: string[] = [".js", ".ts"]
+  extensions: string[] = [".js", ".ts", ".jsx", ".tsx"]
 ): string[] {
   const files: string[] = [];
   const items = fs.readdirSync(dir);
