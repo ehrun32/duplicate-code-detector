@@ -116,6 +116,140 @@ export function findNearDuplicates(
   return nearDuplicates;
 }
 
+/**
+ * Normalizes an AST node by replacing variable names, function names, and literals with placeholders.
+ * @param node - The AST node to normalize.
+ * @returns The normalized AST node as a string.
+ */
+export function normalizeAST(node: any): string {
+  function traverse(n: any) {
+    if (!n || typeof n !== "object") return;
+
+    try {
+      // Replace identifiers and literals with placeholders
+      if (n.type === "Identifier") {
+        n.name = "placeholder";
+      } else if (n.type === "Literal" || n.type === "StringLiteral") {
+        n.value = "placeholder";
+      } else if (n.type === "TemplateLiteral" && n.quasis) {
+        n.quasis.forEach((quasi: any) => {
+          quasi.value.raw = "placeholder";
+          quasi.value.cooked = "placeholder";
+        });
+        n.expressions.forEach(traverse); // Traverse template expressions
+      } else if (n.type === "BinaryExpression") {
+        traverse(n.left); // Normalize left operand
+        traverse(n.right); // Normalize right operand
+      } else if (n.type === "MemberExpression") {
+        traverse(n.object); // Normalize the object
+        traverse(n.property); // Normalize the property
+      } else if (n.type === "CallExpression") {
+        traverse(n.callee); // Normalize the callee
+        n.arguments.forEach(traverse); // Normalize arguments
+      } else if (n.type === "ReturnStatement") {
+        traverse(n.argument); // Normalize the return value
+      } else if (n.type === "IfStatement") {
+        traverse(n.test); // Normalize the condition
+        traverse(n.consequent); // Normalize the 'if' body
+        if (n.alternate) traverse(n.alternate); // Normalize the 'else' body
+      }
+
+      // Recursively traverse child nodes for other types
+      Object.keys(n).forEach((key) => {
+        if (typeof n[key] === "object") traverse(n[key]);
+      });
+    } catch (error) {
+      console.error(
+        `Error traversing node of type ${n.type}:`,
+        JSON.stringify(n, null, 2)
+      );
+    }
+  }
+
+  try {
+    const clonedNode = JSON.parse(JSON.stringify(node));
+    traverse(clonedNode);
+    return generate(clonedNode, { comments: false }).code;
+  } catch (error) {
+    console.error("Error normalizing AST node:", JSON.stringify(node, null, 2));
+    return ""; // Skip the node
+  }
+}
+
+/**
+ * Extracts and normalizes all functions in a JavaScript/TypeScript file.
+ * @param code - The file content to normalize.
+ * @returns An array of normalized functions.
+ */
+export function normalizeFunctions(code: string): string[] {
+  try {
+    const ast = parse(code, {
+      sourceType: "module",
+      plugins: ["typescript", "jsx"],
+    });
+    const normalizedFunctions: string[] = [];
+
+    function traverse(node: any) {
+      if (!node) return;
+
+      if (
+        node.type === "FunctionDeclaration" ||
+        node.type === "FunctionExpression" ||
+        node.type === "ArrowFunctionExpression"
+      ) {
+        const normalizedCode = normalizeAST(node); // Normalize the function
+        if (normalizedCode) {
+          normalizedFunctions.push(normalizedCode);
+        }
+      }
+
+      Object.keys(node).forEach((key) => {
+        if (typeof node[key] === "object") traverse(node[key]);
+      });
+    }
+
+    traverse(ast);
+
+    return normalizedFunctions;
+  } catch (error) {
+    console.error("Error parsing or normalizing functions:", error);
+    return [];
+  }
+}
+
+/**
+ * Finds structural duplicates by comparing normalized functions across files.
+ * @param files - An array of file paths.
+ * @returns An array of objects containing structurally duplicated functions and the files they appear in.
+ */
+export function findStructuralDuplicates(
+  files: string[]
+): { function: string; files: string[] }[] {
+  const normalizedHashes: {
+    [hash: string]: { code: string; files: string[] };
+  } = {};
+
+  files.forEach((file) => {
+    const code = fs.readFileSync(file, "utf-8");
+    const normalizedFunctions = normalizeFunctions(code);
+
+    normalizedFunctions.forEach((func) => {
+      const hash = hashCode(func);
+
+      if (!normalizedHashes[hash]) {
+        normalizedHashes[hash] = { code: func, files: [] };
+      }
+      if (!normalizedHashes[hash].files.includes(file)) {
+        normalizedHashes[hash].files.push(file);
+      }
+    });
+  });
+
+  return Object.values(normalizedHashes)
+    .filter((entry) => entry.files.length > 1)
+    .map((entry) => ({ function: entry.code, files: entry.files }));
+}
+
 // Generate the combined JSON output
 export function generateOutput(
   exactDuplicates: { function: string; files: string[] }[],
@@ -124,22 +258,14 @@ export function generateOutput(
     function2: string;
     similarity: number;
     files: [string, string];
-  }[]
+  }[],
+  structuralDuplicates: { function: string; files: string[] }[]
 ) {
-  // Extract exact duplicate functions for comparison
-  const exactFunctions = exactDuplicates.map((dup) => dup.function.trim());
-
   // Filter out near-duplicates with similarity of 1
   const filteredNearDuplicates = nearDuplicates.filter(
-    (dup) =>
-      dup.similarity < 1 || // Allow only near-duplicates with similarity < 1
-      !(
-        exactFunctions.includes(dup.function1.trim()) &&
-        exactFunctions.includes(dup.function2.trim())
-      )
+    (dup) => dup.similarity < 1
   );
 
-  // Create the final output
   const output = {
     exactDuplicates: exactDuplicates.map((dup) => ({
       function: dup.function.trim(),
@@ -149,6 +275,10 @@ export function generateOutput(
       function1: dup.function1.trim(),
       function2: dup.function2.trim(),
       similarity: dup.similarity,
+      files: dup.files,
+    })),
+    structuralDuplicates: structuralDuplicates.map((dup) => ({
+      function: dup.function.trim(),
       files: dup.files,
     })),
   };

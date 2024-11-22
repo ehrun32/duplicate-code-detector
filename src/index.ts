@@ -1,14 +1,49 @@
-import { scanFiles } from "./scanner";
+import * as fs from "fs";
+import * as path from "path";
 import {
   findExactDuplicates,
   findNearDuplicates,
+  findStructuralDuplicates,
   generateOutput,
 } from "./duplicates";
 
-const directory = "./test";
+/**
+ * Recursively scans a directory and returns all JavaScript/TypeScript file paths.
+ * @param dir - The directory to scan.
+ * @returns An array of file paths.
+ */
+function scanFiles(dir: string): string[] {
+  const files: string[] = [];
+  const items = fs.readdirSync(dir);
+
+  items.forEach((item) => {
+    const fullPath = path.join(dir, item);
+    const stat = fs.statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      files.push(...scanFiles(fullPath)); // Recursive scan for subdirectories
+    } else if (fullPath.endsWith(".js") || fullPath.endsWith(".ts")) {
+      files.push(fullPath);
+    }
+  });
+
+  return files;
+}
+
+// Main execution
+const directory = "./test"; // Change this to your test directory
+if (!fs.existsSync(directory)) {
+  console.error(`Directory not found: ${directory}`);
+  process.exit(1);
+}
+
 const files = scanFiles(directory);
+console.log("Files to process:", files);
 
-const exactDuplicates = findExactDuplicates(files); // Detect exact duplicates
-const nearDuplicates = findNearDuplicates(files); // Detect near duplicates
+// Find exact, near, and structural duplicates
+const exactDuplicates = findExactDuplicates(files);
+const nearDuplicates = findNearDuplicates(files);
+const structuralDuplicates = findStructuralDuplicates(files);
 
-generateOutput(exactDuplicates, nearDuplicates); // Print combined output
+// Generate and display the output
+generateOutput(exactDuplicates, nearDuplicates, structuralDuplicates);
