@@ -126,12 +126,26 @@ export function generateOutput(
     files: [string, string];
   }[]
 ) {
+  // Extract exact duplicate functions for comparison
+  const exactFunctions = exactDuplicates.map((dup) => dup.function.trim());
+
+  // Filter out near-duplicates with similarity of 1
+  const filteredNearDuplicates = nearDuplicates.filter(
+    (dup) =>
+      dup.similarity < 1 || // Allow only near-duplicates with similarity < 1
+      !(
+        exactFunctions.includes(dup.function1.trim()) &&
+        exactFunctions.includes(dup.function2.trim())
+      )
+  );
+
+  // Create the final output
   const output = {
     exactDuplicates: exactDuplicates.map((dup) => ({
       function: dup.function.trim(),
       files: dup.files,
     })),
-    nearDuplicates: nearDuplicates.map((dup) => ({
+    nearDuplicates: filteredNearDuplicates.map((dup) => ({
       function1: dup.function1.trim(),
       function2: dup.function2.trim(),
       similarity: dup.similarity,
