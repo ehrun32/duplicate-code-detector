@@ -63,17 +63,18 @@ export function normalizeAST(node: any): string {
 }
 
 /**
- * Normalizes a JavaScript function provided as a string.
- * @param code - The function code to normalize.
- * @returns The normalized function as a string.
+ * Normalizes all functions in a JavaScript/TypeScript file.
+ * @param code - The file content to normalize.
+ * @returns An array of normalized functions.
  */
-export function normalizeFunction(code: string): string {
+export function normalizeFunctions(code: string): string[] {
   try {
     const ast = parse(code, {
       sourceType: "module",
       plugins: ["typescript", "jsx"],
     });
-    const functions: string[] = [];
+    const normalizedFunctions: string[] = [];
+
     // Traverse the AST to find functions
     function traverse(node: any) {
       if (!node) return;
@@ -83,7 +84,10 @@ export function normalizeFunction(code: string): string {
         node.type === "FunctionExpression" ||
         node.type === "ArrowFunctionExpression"
       ) {
-        functions.push(normalizeAST(node)); // Normalize and store the function
+        const normalizedCode = normalizeAST(node); // Normalize the function
+        if (normalizedCode) {
+          normalizedFunctions.push(normalizedCode);
+        }
       }
 
       Object.keys(node).forEach((key) => {
@@ -93,9 +97,9 @@ export function normalizeFunction(code: string): string {
 
     traverse(ast);
 
-    return functions.length > 0 ? functions[0] : ""; // Return the first normalized function
+    return normalizedFunctions; // Return all normalized functions
   } catch (error) {
-    console.error("Error parsing or normalizing function:", error);
-    return "";
+    console.error("Error parsing or normalizing functions:", error);
+    return [];
   }
 }

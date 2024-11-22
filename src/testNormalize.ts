@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { normalizeFunction } from "./normalize";
+import { normalizeFunctions } from "./normalize";
 
 /**
  * Recursively scans a directory and returns all JavaScript/TypeScript file paths.
@@ -33,10 +33,12 @@ function testNormalizeFile(file: string) {
   try {
     const code = fs.readFileSync(file, "utf-8");
     console.log(`\nProcessing File: ${file}`);
-    const normalizedFunction = normalizeFunction(code);
-    if (normalizedFunction) {
-      console.log("Normalized Code:");
-      console.log(normalizedFunction);
+    const normalizedFunctions = normalizeFunctions(code);
+    if (normalizedFunctions.length > 0) {
+      normalizedFunctions.forEach((func, index) => {
+        console.log(`Normalized Function ${index + 1}:`);
+        console.log(func);
+      });
     } else {
       console.log("No functions found or normalization failed.");
     }
