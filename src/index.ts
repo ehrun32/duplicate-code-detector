@@ -1,7 +1,14 @@
 import { scanFiles } from "./scanner";
-import { findExactDuplicates, printJsonOutput } from "./duplicates";
+import {
+  findExactDuplicates,
+  findNearDuplicates,
+  generateOutput,
+} from "./duplicates";
 
-const directory = "./test"; // Test directory
-const files = scanFiles(directory); // Scan for files
-const duplicates = findExactDuplicates(files); // Find duplicates
-printJsonOutput(duplicates); // Print results in JSON format
+const directory = "./test";
+const files = scanFiles(directory);
+
+const exactDuplicates = findExactDuplicates(files); // Detect exact duplicates
+const nearDuplicates = findNearDuplicates(files); // Detect near duplicates
+
+generateOutput(exactDuplicates, nearDuplicates); // Print combined output

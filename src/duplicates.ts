@@ -1,29 +1,21 @@
 import * as fs from "fs";
 import { parse } from "@babel/parser";
 import generate from "@babel/generator";
-import * as crypto from "crypto";
+import { compareTwoStrings } from "string-similarity";
 
-/**
- * Hashes a given string using SHA256.
- * @param content - The string to hash.
- * @returns The hash of the string.
- */
+// Hash function for exact duplicates
 export function hashCode(content: string): string {
+  const crypto = require("crypto");
   return crypto.createHash("sha256").update(content).digest("hex");
 }
 
-/**
- * Extracts function-level code blocks from an Abstract Syntax Tree (AST).
- * @param ast - The AST of the code.
- * @returns An array of code blocks as strings.
- */
+// Extract function blocks from AST
 export function extractFunctions(ast: any): string[] {
   const functions: string[] = [];
 
   function traverse(node: any) {
     if (!node) return;
 
-    // Check for function-like nodes
     if (
       node.type === "FunctionDeclaration" ||
       node.type === "FunctionExpression" ||
@@ -32,11 +24,8 @@ export function extractFunctions(ast: any): string[] {
       functions.push(nodeToString(node)); // Convert function to string
     }
 
-    // Recursively traverse child nodes
     Object.keys(node).forEach((key) => {
-      if (typeof node[key] === "object") {
-        traverse(node[key]);
-      }
+      if (typeof node[key] === "object") traverse(node[key]);
     });
   }
 
@@ -44,20 +33,12 @@ export function extractFunctions(ast: any): string[] {
   return functions;
 }
 
-/**
- * Converts an AST node back into a JavaScript code string.
- * @param node - The AST node to convert.
- * @returns The string representation of the code.
- */
+// Convert AST node to string
 export function nodeToString(node: any): string {
-  return generate(node).code;
+  return generate(node, { comments: false }).code; // Strip comments
 }
 
-/**
- * Finds exact duplicate functions across multiple files.
- * @param files - An array of file paths.
- * @returns An array of objects containing duplicated functions and the files they appear in.
- */
+// Find exact duplicates
 export function findExactDuplicates(
   files: string[]
 ): { function: string; files: string[] }[] {
@@ -65,17 +46,14 @@ export function findExactDuplicates(
 
   files.forEach((file) => {
     const code = fs.readFileSync(file, "utf-8");
-
-    // Parse the file into an AST
     const ast = parse(code, {
       sourceType: "module",
       plugins: ["typescript", "jsx"],
     });
 
-    // Extract functions or blocks
     extractFunctions(ast).forEach((func) => {
-      const funcCode = func.trim(); // Clean up the function code
-      const hash = hashCode(funcCode); // Hash the function code
+      const funcCode = func.trim();
+      const hash = hashCode(funcCode);
 
       if (!hashes[hash]) {
         hashes[hash] = { code: funcCode, files: [] };
@@ -86,25 +64,80 @@ export function findExactDuplicates(
     });
   });
 
-  // Filter and format output for readability
   return Object.values(hashes)
-    .filter((entry) => entry.files.length > 1) // Only include duplicates
+    .filter((entry) => entry.files.length > 1)
     .map((entry) => ({ function: entry.code, files: entry.files }));
 }
 
-/**
- * Prints duplicate functions in JSON format.
- * @param duplicates - An array of objects containing duplicated functions and their files.
- */
-export function printJsonOutput(
-  duplicates: { function: string; files: string[] }[]
-): void {
+// Find near duplicates
+export function findNearDuplicates(
+  files: string[],
+  threshold: number = 0.8
+): {
+  function1: string;
+  function2: string;
+  similarity: number;
+  files: [string, string];
+}[] {
+  const functions: { code: string; file: string }[] = [];
+
+  files.forEach((file) => {
+    const code = fs.readFileSync(file, "utf-8");
+    const ast = parse(code, {
+      sourceType: "module",
+      plugins: ["typescript", "jsx"],
+    });
+    extractFunctions(ast).forEach((func) => {
+      functions.push({ code: func.trim(), file });
+    });
+  });
+
+  const nearDuplicates: {
+    function1: string;
+    function2: string;
+    similarity: number;
+    files: [string, string];
+  }[] = [];
+
+  for (let i = 0; i < functions.length; i++) {
+    for (let j = i + 1; j < functions.length; j++) {
+      const sim = compareTwoStrings(functions[i].code, functions[j].code);
+      if (sim >= threshold) {
+        nearDuplicates.push({
+          function1: functions[i].code,
+          function2: functions[j].code,
+          similarity: sim,
+          files: [functions[i].file, functions[j].file],
+        });
+      }
+    }
+  }
+
+  return nearDuplicates;
+}
+
+// Generate the combined JSON output
+export function generateOutput(
+  exactDuplicates: { function: string; files: string[] }[],
+  nearDuplicates: {
+    function1: string;
+    function2: string;
+    similarity: number;
+    files: [string, string];
+  }[]
+) {
   const output = {
-    exactDuplicates: duplicates.map((duplicate) => ({
-      function: duplicate.function.trim(), // Clean up the function code
-      files: duplicate.files,
+    exactDuplicates: exactDuplicates.map((dup) => ({
+      function: dup.function.trim(),
+      files: dup.files,
+    })),
+    nearDuplicates: nearDuplicates.map((dup) => ({
+      function1: dup.function1.trim(),
+      function2: dup.function2.trim(),
+      similarity: dup.similarity,
+      files: dup.files,
     })),
   };
 
-  console.log(JSON.stringify(output, null, 2)); // Pretty print JSON
+  console.log(JSON.stringify(output, null, 2));
 }
