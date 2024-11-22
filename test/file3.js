@@ -1,16 +1,15 @@
 // file3.js
 
-// Exact duplicate of add in file1.js
+// Same as add in file1.js
 function add(a, b) {
   return a + b;
 }
 
-// Near-duplicate of greet in file1.js (message format changed)
+// Slightly different greet logic
 function greet(name) {
   console.log("Hi there, " + name);
 }
 
-// Unique function
 function subtract(a, b) {
   return a - b;
 }

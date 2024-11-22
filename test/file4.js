@@ -1,6 +1,5 @@
 // file4.js
 
-// Unique function
 function divide(a, b) {
   if (b !== 0) {
     return a / b;
@@ -10,6 +9,7 @@ function divide(a, b) {
   }
 }
 
+// Same structure as add in file1.js but with subtraction instead of addition
 function add(a, b) {
-  return a - b; // Changed operation
+  return a - b;
 }
