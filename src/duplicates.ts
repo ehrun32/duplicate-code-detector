@@ -222,32 +222,56 @@ export function normalizeFunctions(code: string): string[] {
  * @param files - An array of file paths.
  * @returns An array of objects containing structurally duplicated functions and the files they appear in.
  */
-export function findStructuralDuplicates(
-  files: string[]
-): { function: string; files: string[] }[] {
+export function findStructuralDuplicates(files: string[]): {
+  normalizedFunction: string;
+  originalFunctions: { file: string; function: string }[];
+}[] {
   const normalizedHashes: {
-    [hash: string]: { code: string; files: string[] };
+    [hash: string]: {
+      normalizedFunction: string;
+      originalFunctions: { file: string; function: string }[];
+    };
   } = {};
 
   files.forEach((file) => {
     const code = fs.readFileSync(file, "utf-8");
-    const normalizedFunctions = normalizeFunctions(code);
 
-    normalizedFunctions.forEach((func) => {
-      const hash = hashCode(func);
+    // Extract and normalize functions from the file
+    const ast = parse(code, {
+      sourceType: "module",
+      plugins: ["typescript", "jsx"],
+    });
+    const functions = extractFunctions(ast);
+
+    functions.forEach((originalFunction) => {
+      const normalizedCode = normalizeAST(
+        parse(originalFunction, { sourceType: "module" })
+      );
+
+      if (!normalizedCode) {
+        console.error(`Failed to normalize function: ${originalFunction}`);
+        return;
+      }
+
+      const hash = hashCode(normalizedCode);
 
       if (!normalizedHashes[hash]) {
-        normalizedHashes[hash] = { code: func, files: [] };
+        normalizedHashes[hash] = {
+          normalizedFunction: normalizedCode,
+          originalFunctions: [],
+        };
       }
-      if (!normalizedHashes[hash].files.includes(file)) {
-        normalizedHashes[hash].files.push(file);
-      }
+      normalizedHashes[hash].originalFunctions.push({
+        file,
+        function: originalFunction,
+      });
     });
   });
 
-  return Object.values(normalizedHashes)
-    .filter((entry) => entry.files.length > 1)
-    .map((entry) => ({ function: entry.code, files: entry.files }));
+  // Filter results to include only structural duplicates (more than one occurrence)
+  return Object.values(normalizedHashes).filter(
+    (entry) => entry.originalFunctions.length > 1
+  );
 }
 
 // Generate the combined JSON output
@@ -259,27 +283,28 @@ export function generateOutput(
     similarity: number;
     files: [string, string];
   }[],
-  structuralDuplicates: { function: string; files: string[] }[]
+  structuralDuplicates: {
+    normalizedFunction: string;
+    originalFunctions: { file: string; function: string }[];
+  }[]
 ) {
-  // Filter out near-duplicates with similarity of 1
-  const filteredNearDuplicates = nearDuplicates.filter(
-    (dup) => dup.similarity < 1
-  );
-
   const output = {
     exactDuplicates: exactDuplicates.map((dup) => ({
       function: dup.function.trim(),
       files: dup.files,
     })),
-    nearDuplicates: filteredNearDuplicates.map((dup) => ({
+    nearDuplicates: nearDuplicates.map((dup) => ({
       function1: dup.function1.trim(),
       function2: dup.function2.trim(),
       similarity: dup.similarity,
       files: dup.files,
     })),
     structuralDuplicates: structuralDuplicates.map((dup) => ({
-      function: dup.function.trim(),
-      files: dup.files,
+      normalizedFunction: dup.normalizedFunction.trim(),
+      originalFunctions: dup.originalFunctions.map((original) => ({
+        file: original.file,
+        function: original.function.trim(),
+      })),
     })),
   };
 

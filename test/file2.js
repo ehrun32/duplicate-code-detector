@@ -1,8 +1,8 @@
 // file2.js
 
 // Same as greet in file1.js
-function greet(name) {
-  console.log(`Hello, ${name}`);
+function greet(user) {
+  console.log(`Hello, ${user}`);
 }
 
 // Same logic as add in file1.js but with different variable names
