@@ -4,6 +4,7 @@
     "@babel/parser": "^7.26.2",
     "crypto": "^1.0.1",
     "glob": "^11.0.0",
+    "inquirer": "^12.2.0",
     "leven": "^4.0.0",
     "string-similarity": "^4.0.4",
     "ts-node": "^10.9.2",
