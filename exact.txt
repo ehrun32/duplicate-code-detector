@@ -1,0 +1,27 @@
+{
+  "exactDuplicates": [
+    {
+      "function": "function add(a, b) {\n  return a + b;\n}",
+      "files": [
+        "test\\TestingFilesEndingWithJSX\\file1.jsx",
+        "test\\TestingFilesEndingWithJSX\\file2.jsx",
+        "test\\TestingFilesEndingWithJSX\\file6.jsx"
+      ]
+    },
+    {
+      "function": "function greet(name) {\n  console.log(`Hello, ${name}`);\n}",
+      "files": [
+        "test\\TestingFilesEndingWithJSX\\file1.jsx",
+        "test\\TestingFilesEndingWithJSX\\file2.jsx",
+        "test\\TestingFilesEndingWithJSX\\file6.jsx"
+      ]
+    },
+    {
+      "function": "function calculateRectangleArea(length, width) {\n  return width * length;\n}",
+      "files": [
+        "test\\TestingFilesEndingWithJSX\\file2.jsx",
+        "test\\TestingFilesEndingWithJSX\\file5.jsx"
+      ]
+    }
+  ]
+}

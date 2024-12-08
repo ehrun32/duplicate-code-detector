@@ -1,0 +1,80 @@
+{
+  "structuralDuplicates": [
+    {
+      "normalizedFunction": "function placeholder(placeholder, placeholder) {\n  return placeholder + placeholder;\n}",
+      "originalFunctions": [
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file1.js",
+          "function": "function add(a, b) {\n  return a + b;\n}"
+        },
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file2.js",
+          "function": "function add(a, b) {\n  return a + b;\n}"
+        },
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file3.js",
+          "function": "function add(x, y) {\n  return x + y;\n}"
+        },
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file6.js",
+          "function": "function add(a, b) {\n  return a + b;\n}"
+        },
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file7.js",
+          "function": "function addNumbers(a, b) {\n  return a + b;\n}"
+        }
+      ]
+    },
+    {
+      "normalizedFunction": "function placeholder(placeholder) {\n  placeholder.placeholder(`placeholder${placeholder}placeholder`);\n}",
+      "originalFunctions": [
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file1.js",
+          "function": "function greet(name) {\n  console.log(`Hello, ${name}`);\n}"
+        },
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file2.js",
+          "function": "function greet(name) {\n  console.log(`Hello, ${name}`);\n}"
+        },
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file6.js",
+          "function": "function greet(name) {\n  console.log(`Hello, ${name}`);\n}"
+        }
+      ]
+    },
+    {
+      "normalizedFunction": "function placeholder(placeholder, placeholder) {\n  return placeholder * placeholder;\n}",
+      "originalFunctions": [
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file1.js",
+          "function": "function calculateRectangleArea(length, width) {\n  return length * width;\n}"
+        },
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file2.js",
+          "function": "function calculateRectangleArea(length, width) {\n  return width * length;\n}"
+        },
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file3.js",
+          "function": "function multiply(a, b) {\n  return a * b;\n}"
+        },
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file5.js",
+          "function": "function calculateRectangleArea(length, width) {\n  return width * length;\n}"
+        }
+      ]
+    },
+    {
+      "normalizedFunction": "function placeholder(placeholder, placeholder) {\n  return placeholder - placeholder;\n}",
+      "originalFunctions": [
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file4.js",
+          "function": "function subtract(a, b) {\n  return a - b;\n}"
+        },
+        {
+          "file": "test\\TestingFilesEndingWithJS\\file4.js",
+          "function": "function add(a, b) {\n  return a - b;\n}"
+        }
+      ]
+    }
+  ]
+}

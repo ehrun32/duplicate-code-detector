@@ -1,0 +1,85 @@
+{
+  "nearDuplicates": [
+    {
+      "function1": "function add(a, b) { return a + b; }",
+      "function2": "function add(a, b) { return a - b; }",
+      "similarity": 0.9259259259259259,
+      "files": [
+        "test\\TestingFilesEndingWithJS\\file1.js",
+        "test\\TestingFilesEndingWithJS\\file4.js"
+      ]
+    },
+    {
+      "function1": "function add(a, b) { return a + b; }",
+      "function2": "function addNumbers(a, b) { return a + b; }",
+      "similarity": 0.8524590163934426,
+      "files": [
+        "test\\TestingFilesEndingWithJS\\file1.js",
+        "test\\TestingFilesEndingWithJS\\file7.js"
+      ]
+    },
+    {
+      "function1": "function calculateRectangleArea(length, width) { return length * width; }",
+      "function2": "function calculateRectangleArea(length, width) { return width * length; }",
+      "similarity": 0.96875,
+      "files": [
+        "test\\TestingFilesEndingWithJS\\file1.js",
+        "test\\TestingFilesEndingWithJS\\file2.js"
+      ]
+    },
+    {
+      "function1": "function calculateRectangleArea(length, width) { return length * width; }",
+      "function2": "function calculateRectangleArea(length, width) { return width * length; }",
+      "similarity": 0.96875,
+      "files": [
+        "test\\TestingFilesEndingWithJS\\file1.js",
+        "test\\TestingFilesEndingWithJS\\file5.js"
+      ]
+    },
+    {
+      "function1": "function add(a, b) { return a + b; }",
+      "function2": "function add(a, b) { return a - b; }",
+      "similarity": 0.9259259259259259,
+      "files": [
+        "test\\TestingFilesEndingWithJS\\file2.js",
+        "test\\TestingFilesEndingWithJS\\file4.js"
+      ]
+    },
+    {
+      "function1": "function add(a, b) { return a + b; }",
+      "function2": "function addNumbers(a, b) { return a + b; }",
+      "similarity": 0.8524590163934426,
+      "files": [
+        "test\\TestingFilesEndingWithJS\\file2.js",
+        "test\\TestingFilesEndingWithJS\\file7.js"
+      ]
+    },
+    {
+      "function1": "function add(a, b) { return a - b; }",
+      "function2": "function add(a, b) { return a + b; }",
+      "similarity": 0.9259259259259259,
+      "files": [
+        "test\\TestingFilesEndingWithJS\\file4.js",
+        "test\\TestingFilesEndingWithJS\\file6.js"
+      ]
+    },
+    {
+      "function1": "function add(a, b) { return a + b; }",
+      "function2": "function addNumbers(a, b) { return a + b; }",
+      "similarity": 0.8524590163934426,
+      "files": [
+        "test\\TestingFilesEndingWithJS\\file6.js",
+        "test\\TestingFilesEndingWithJS\\file7.js"
+      ]
+    },
+    {
+      "function1": "function calculateRectangleArea(length, width) { if (length <= 0 || width <= 0) { console.error(\"Invalid dimensions!\"); return 0; } return length * width; }",
+      "function2": "function calculateRectangleArea(length, width) { if (length > 0 && width > 0) { return length * width; } throw new Error(\"Invalid dimensions!\"); }",
+      "similarity": 0.8203125,
+      "files": [
+        "test\\TestingFilesEndingWithJS\\file6.js",
+        "test\\TestingFilesEndingWithJS\\file7.js"
+      ]
+    }
+  ]
+}
