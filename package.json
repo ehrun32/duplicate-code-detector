@@ -14,5 +14,8 @@
     "@types/babel__generator": "^7.6.8",
     "@types/node": "^22.9.1",
     "@types/string-similarity": "^4.0.2"
+  },
+  "scripts": {
+    "start": "ts-node src/index.ts"
   }
 }
