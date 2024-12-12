@@ -14,7 +14,7 @@ Duplicate Code Detector is a powerful tool designed to identify and analyze dupl
 
   
 
-2. Install dependencies:
+2. Need to have node installed and then Install dependencies:
 
    ```bash
    npm install
