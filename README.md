@@ -2,6 +2,12 @@
 
 Duplicate Code Detector is a powerful tool designed to identify and analyze duplicate code across JavaScript, TypeScript, JSX, and TSX files. It supports three types of analysis: Exact, Near, and Structural duplicate detection.
 
+## Demo
+
+[Click here to watch the demo video](https://drive.google.com/file/d/1Q95uzvOlO5yWKFB62utgxLdXOqZM3a27/view?usp=sharing)
+
+---
+
 ## Features
 
 - **Exact Duplicate Detection**: Finds identical code blocks across files.
